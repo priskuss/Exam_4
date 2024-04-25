@@ -2,14 +2,38 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
-using System.Diagnostics;
 
 namespace WeatherLog
 {
+    public class YRData
+    {
+        public Properties properties { get; set; }
+    }
+    public class Properties
+    {
+        public List<Timeseries> timeseries { get; set; }
+    }
+    public class Timeseries
+    {
+        public Data data { get; set; }
+    }
+    public class Data
+    {
+        public Instant instant { get; set; }
+    }
+    public class Instant
+    {
+        public Details details { get; set; }
+    }
+    public class Details
+    {
+        public double air_temperature { get; set; }
+    }
+
     class API
     {
-        private const string BaseUrl = "https://api.met.no/weatherapi/nowcast/2.0/complete?lat=59.9333&lon=10.7166";
-        private const string UserAgent = "MyTestApp/0.1";
+        private const string BaseUrl = Constant.BaseUrl;
+        private const string UserAgent = Constant.UserAgent;
 
         public static async Task<double?> GetWeatherDataAsync()
         {
@@ -21,18 +45,15 @@ namespace WeatherLog
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     var response = await responseMessage.Content.ReadAsStringAsync();
-                    var data = JsonDocument.Parse(response);
-                    var root = data.RootElement;
-                    var timeseries = root.GetProperty("properties").GetProperty("timeseries").EnumerateArray().ToList();
-
-                    var currentWeatherData = timeseries[0];
-                    var temperature = currentWeatherData.GetProperty("data").GetProperty("instant").GetProperty("details").GetProperty("air_temperature").GetDouble();
+                    var YRData = JsonSerializer.Deserialize<YRData>(response);
+                    var temperature = YRData.properties.timeseries[0].data.instant.details.air_temperature;
 
                     return temperature;
                 }
                 else
                 {
-                    throw new Exception($"Error: {responseMessage.StatusCode}, {responseMessage.ReasonPhrase}");
+                    var errorMessage = string.Format(Constant.Error, responseMessage.StatusCode, responseMessage.ReasonPhrase);
+                    throw new Exception(errorMessage);
                 }
             }
         }
