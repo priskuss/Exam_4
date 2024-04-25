@@ -5,31 +5,6 @@ using System.Text.Json;
 
 namespace WeatherLog
 {
-    public class YRData
-    {
-        public Properties properties { get; set; }
-    }
-    public class Properties
-    {
-        public List<Timeseries> timeseries { get; set; }
-    }
-    public class Timeseries
-    {
-        public Data data { get; set; }
-    }
-    public class Data
-    {
-        public Instant instant { get; set; }
-    }
-    public class Instant
-    {
-        public Details details { get; set; }
-    }
-    public class Details
-    {
-        public double air_temperature { get; set; }
-    }
-
     class API
     {
         private const string BaseUrl = Constant.BaseUrl;
@@ -37,22 +12,26 @@ namespace WeatherLog
 
         public static async Task<double?> GetWeatherDataAsync()
         {
-            using (var client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
-                var responseMessage = await client.GetAsync(BaseUrl);
+                HttpResponseMessage responseMessage = await client.GetAsync(BaseUrl);
 
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    var response = await responseMessage.Content.ReadAsStringAsync();
-                    var YRData = JsonSerializer.Deserialize<YRData>(response);
-                    var temperature = YRData.properties.timeseries[0].data.instant.details.air_temperature;
+                    string response = await responseMessage.Content.ReadAsStringAsync();
+                    JsonDocument data = JsonDocument.Parse(response);
+                    JsonElement root = data.RootElement;
+                    List<JsonElement> timeseries = root.GetProperty("properties").GetProperty("timeseries").EnumerateArray().ToList();
+
+                    JsonElement currentWeatherData = timeseries[0];
+                    double temperature = currentWeatherData.GetProperty("data").GetProperty("instant").GetProperty("details").GetProperty("air_temperature").GetDouble();
 
                     return temperature;
                 }
                 else
                 {
-                    var errorMessage = string.Format(Constant.Error, responseMessage.StatusCode, responseMessage.ReasonPhrase);
+                    string errorMessage = string.Format(Constant.Error, responseMessage.StatusCode, responseMessage.ReasonPhrase);
                     throw new Exception(errorMessage);
                 }
             }
