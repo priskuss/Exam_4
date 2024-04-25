@@ -1,19 +1,93 @@
 [
     [
+        [
+            [
+                {
+                    "Date": "2024-04-23T20:59:49.1535038\u002B03:00",
+                    "UserTemperature": 4,
+                    "YRData": 5.6
+                },
+                {
+                    "Date": "2024-04-24T12:26:06.3686829\u002B03:00",
+                    "UserTemperature": 6,
+                    "YRData": 7.4
+                },
+                {
+                    "Date": "2024-04-24T12:31:09.5854728\u002B03:00",
+                    "UserTemperature": 6,
+                    "YRData": 7.4
+                }
+            ]
+        ],
         {
-            "Date": "2024-04-23T20:59:49.1535038\u002B03:00",
-            "UserTemperature": 4,
-            "YRData": 5.6
-        },
-        {
-            "Date": "2024-04-24T12:26:06.3686829\u002B03:00",
-            "UserTemperature": 6,
-            "YRData": 7.4
-        },
-        {
-            "Date": "2024-04-24T12:31:09.5854728+03:00",
-            "UserTemperature": 6,
-            "YRData": 7.4
+            "Date": "2024-04-24T13:33:38.5501362\u002B03:00",
+            "UserTemperature": 9,
+            "YRData": 8.1
         }
-    ]
+    ],
+    {
+        "Date": "2024-04-24T13:36:42.435833\u002B03:00",
+        "UserTemperature": 7,
+        "YRData": 8.1
+    },
+    {
+        "Date": "2024-04-24T13:38:36.9268267\u002B03:00",
+        "UserTemperature": 7.6,
+        "YRData": 8.1
+    },
+    {
+        "Date": "2024-04-24T13:54:34.6515212\u002B03:00",
+        "UserTemperature": 6,
+        "YRData": 8.2
+    },
+    {
+        "Date": "2024-04-24T13:55:57.5229211\u002B03:00",
+        "UserTemperature": 7.5,
+        "YRData": 8.2
+    },
+    {
+        "Date": "2024-04-24T16:44:26.5410671\u002B03:00",
+        "UserTemperature": 6,
+        "YRData": 6.2
+    },
+    {
+        "Date": "2024-04-24T16:50:44.0270337\u002B03:00",
+        "UserTemperature": 6,
+        "YRData": 6
+    },
+    {
+        "Date": "2024-04-24T16:56:49.2168016\u002B03:00",
+        "UserTemperature": 6,
+        "YRData": 6
+    },
+    {
+        "Date": "2024-04-24T17:07:35.548679\u002B03:00",
+        "UserTemperature": 6,
+        "YRData": 5.9,
+        "TemperatureDifference": 0.09999999999999964
+    },
+    {
+        "Date": "2024-04-24T17:08:42.6470909\u002B03:00",
+        "UserTemperature": 7,
+        "YRData": 5.9,
+        "TemperatureDifference": 1.1
+    },
+    {
+        "Date": "2024-04-24T17:09:38.615855\u002B03:00",
+        "UserTemperature": 4,
+        "YRData": 5.9,
+        "TemperatureDifference": 1.9
+    },
+    {
+        "Date": "2024-04-24T17:10:08.9189987\u002B03:00",
+        "UserTemperature": 8,
+        "YRData": 5.9,
+        "TemperatureDifference": 2.1
+    },
+    {
+        "Date": "2024-04-25T12:31:33.1308855+03:00",
+        "UserTemperature": 66,
+        "YRData": 6.1,
+        "TemperatureDifference": 59.9
+    }
 ]
