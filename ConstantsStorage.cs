@@ -44,4 +44,19 @@ class Constant
     public const int NumberOne = 1;
     public const int NumberThree = 3;
     public const int NumberFive = 5;
+    public const int NumberSeven = 7;
+    public const int NumberTwentyNine = 29;
+    public const string DailyReport = "1";
+    public const string WeeklyReport = "2";
+    public const string MonthlyReport = "3";
+    public const string Exit = "4";
+    public const string InvalidChoice = "Invalid choice. No report will be generated.";
+    public const string NotEnoughDataWeekly = "Not enough data for Weekly Report";
+    public const string NotEnoughDataMonthly = "Not enough data for Monthly Report";
+    public const string TodayIs = "Today is {0}";
+    public const string UserTemperatureActualTemperature = "User Temperature: {0}\nActual Temperature: {1}\nTemperature Difference: {2}";
+    public const string DailyReportTitle = "Daily report";
+    public const string WeeklyReportTitle = "Weekly report";
+    public const string MonthlyReportTitle = "Monthly report";
+    public const string DoYouWantToSeeTheReport = "Do you want to see the report? For a day report enter 1. For a week report enter 2. For a month report enter 3. To exit enter 4.";
 }
