@@ -59,7 +59,7 @@ public static class Predictions
         }
 
         Console.WriteLine(Constant.OpeningLine);
-        Thread.Sleep(4000);
+        System.Threading.Thread.Sleep(4000);
         Console.Clear();
         return prediction;
     }
