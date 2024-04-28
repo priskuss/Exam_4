@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public static class Predictions
 {
     private static readonly Random Random = new Random();
-    //opening line 
+
     private static readonly List<string> PositivePredictions = new List<string>
         {
            Constant.PositivePredictionOne,
@@ -58,7 +58,9 @@ public static class Predictions
             prediction = WarningPredictions[Random.Next(WarningPredictions.Count)];
         }
 
-        return $"{Constant.OpeningLine}\n{prediction}";
+        Console.WriteLine(Constant.OpeningLine);
+        Thread.Sleep(4000);
+        Console.Clear();
+        return prediction;
     }
-
 }
