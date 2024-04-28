@@ -45,12 +45,35 @@ namespace WeatherLog
                     {
                         DisplayTemperatureData(userTemperature, YRData.Value);
                         await SaveTemperatureData(userTemperature, YRData.Value, Constant.LogFile);
+
+                        Thread.Sleep(5000);
+                        Console.Clear();
+                        Console.WriteLine(Constant.DoYouWantToSeeTheReport);
+                        string reportChoice = Console.ReadLine();
+
+                        switch (reportChoice)
+                        {
+                            case Constant.DailyReport:
+                                await Report.GenerateDailyReport(Constant.LogFile);
+                                break;
+                            case Constant.WeeklyReport:
+                                await Report.GenerateWeeklyReport(Constant.LogFile);
+                                break;
+                            case Constant.MonthlyReport:
+                                await Report.GenerateMonthlyReport(Constant.LogFile);
+                                break;
+                            case Constant.Exit:
+                                Environment.Exit(0);
+                                break;
+                            default:
+                                Console.WriteLine(Constant.InvalidChoice);
+                                break;
+                        }
                     }
                     break;
                 }
             }
         }
-
         public static bool GetUserConfirmation(string message)
         {
             Console.WriteLine(message);
