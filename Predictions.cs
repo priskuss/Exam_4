@@ -7,21 +7,32 @@ public static class Predictions
 
     private static readonly Dictionary<int, List<string>> PredictionsByTemperatureDifference = new Dictionary<int, List<string>>
     {
-        { Constant.NumberOne, new List<string> { Constant.PositivePredictionOne, Constant.PositivePredictionTwo, Constant.PositivePredictionThree } },
-        { Constant.NumberThree, new List<string> { Constant.FunnyPredictionOne, Constant.FunnyPredictionTwo, Constant.FunnyPredictionThree, Constant.FunnyPredictionFour } },
-        { Constant.NumberFive, new List<string> { Constant.NeutralPredictionOne, Constant.NeutralPredictionTwo, Constant.NeutralPredictionThree, Constant.NeutralPredictionFour } },
-        { Constant.NumberHundred, new List<string> { Constant.WarningPredictionOne, Constant.WarningPredictionTwo, Constant.WarningPredictionThree, Constant.WarningPredictionFour } }
+        { Constant.NumberOne, new List<string> { Constant.PositivePredictionOne, Constant.PositivePredictionTwo, Constant.PositivePredictionThree, Constant.PositivePredictionFour, Constant.PositivePredictionFive, Constant.PositivePredictionSix } },
+        { Constant.NumberThree, new List<string> { Constant.FunnyPredictionOne, Constant.FunnyPredictionTwo, Constant.FunnyPredictionThree, Constant.FunnyPredictionFour, Constant.FunnyPredictionFive } },
+        { Constant.NumberFive, new List<string> { Constant.NeutralPredictionOne, Constant.NeutralPredictionTwo, Constant.NeutralPredictionThree, Constant.NeutralPredictionFour, Constant.NeutralPredictionFive, Constant.NeutralPredictionSix, Constant.NeutralPredictionSeven } },
+        { Constant.NumberHundred, new List<string> { Constant.WarningPredictionOne, Constant.WarningPredictionTwo, Constant.WarningPredictionThree, Constant.WarningPredictionFour, Constant.WarningPredictionFive, Constant.WarningPredictionSix } }
     };
 
-    public static string GetPrediction(double temperatureDifference)
+    public static Func<double, Task<string>> GetPrediction = async (temperatureDifference) =>
     {
-        foreach (var prediction in PredictionsByTemperatureDifference)
+        try
         {
-            if (temperatureDifference < prediction.Key)
+            foreach (var prediction in PredictionsByTemperatureDifference)
             {
-                return prediction.Value[Random.Next(prediction.Value.Count)];
+                if (temperatureDifference < prediction.Key)
+                {
+                    Console.WriteLine(Constant.OpeningLine);
+                    await Task.Delay(5000);
+                    Console.Clear();
+                    return prediction.Value[Random.Next(prediction.Value.Count)];
+                }
             }
+            return string.Empty;
         }
-        return string.Empty;
-    }
+        catch (Exception ex)
+        {
+            Console.WriteLine(Constant.ErrorGettingPrediction + ex.Message);
+            return string.Empty;
+        }
+    };
 }
