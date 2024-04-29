@@ -5,62 +5,23 @@ public static class Predictions
 {
     private static readonly Random Random = new Random();
 
-    private static readonly List<string> PositivePredictions = new List<string>
-        {
-           Constant.PositivePredictionOne,
-           Constant.PositivePredictionTwo,
-           Constant.PositivePredictionThree
-        };
-
-    private static readonly List<string> FunnyPredictions = new List<string>
-        {
-            Constant.FunnyPredictionOne,
-            Constant.FunnyPredictionTwo,
-            Constant.FunnyPredictionThree,
-            Constant.FunnyPredictionFour
-        };
-
-    private static readonly List<string> NeutralPredictions = new List<string>
-        {
-            Constant.NeutralPredictionOne,
-            Constant.NeutralPredictionTwo,
-            Constant.NeutralPredictionThree,
-            Constant.NeutralPredictionFour
-        };
-
-
-    private static readonly List<string> WarningPredictions = new List<string>
-        {
-            Constant.WarningPredictionOne,
-            Constant.WarningPredictionTwo,
-            Constant.WarningPredictionThree,
-            Constant.WarningPredictionFour
-        };
+    private static readonly Dictionary<int, List<string>> PredictionsByTemperatureDifference = new Dictionary<int, List<string>>
+    {
+        { Constant.NumberOne, new List<string> { Constant.PositivePredictionOne, Constant.PositivePredictionTwo, Constant.PositivePredictionThree } },
+        { Constant.NumberThree, new List<string> { Constant.FunnyPredictionOne, Constant.FunnyPredictionTwo, Constant.FunnyPredictionThree, Constant.FunnyPredictionFour } },
+        { Constant.NumberFive, new List<string> { Constant.NeutralPredictionOne, Constant.NeutralPredictionTwo, Constant.NeutralPredictionThree, Constant.NeutralPredictionFour } },
+        { Constant.NumberHundred, new List<string> { Constant.WarningPredictionOne, Constant.WarningPredictionTwo, Constant.WarningPredictionThree, Constant.WarningPredictionFour } }
+    };
 
     public static string GetPrediction(double temperatureDifference)
     {
-        string prediction;
-
-        if (temperatureDifference < Constant.NumberOne)
+        foreach (var prediction in PredictionsByTemperatureDifference)
         {
-            prediction = PositivePredictions[Random.Next(PositivePredictions.Count)];
+            if (temperatureDifference < prediction.Key)
+            {
+                return prediction.Value[Random.Next(prediction.Value.Count)];
+            }
         }
-        else if (temperatureDifference < Constant.NumberThree)
-        {
-            prediction = FunnyPredictions[Random.Next(FunnyPredictions.Count)];
-        }
-        else if (temperatureDifference < Constant.NumberFive)
-        {
-            prediction = NeutralPredictions[Random.Next(NeutralPredictions.Count)];
-        }
-        else
-        {
-            prediction = WarningPredictions[Random.Next(WarningPredictions.Count)];
-        }
-
-        Console.WriteLine(Constant.OpeningLine);
-        System.Threading.Thread.Sleep(4000);
-        Console.Clear();
-        return prediction;
+        return string.Empty;
     }
 }
