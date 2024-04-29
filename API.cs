@@ -10,28 +10,36 @@ public class API
 
     public static async Task<double?> GetWeatherDataAsync()
     {
-        using (HttpClient client = new HttpClient())
+        try
         {
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
-            HttpResponseMessage responseMessage = await client.GetAsync(BaseUrl);
-
-            if (responseMessage.IsSuccessStatusCode)
+            using (HttpClient client = new HttpClient())
             {
-                string response = await responseMessage.Content.ReadAsStringAsync();
-                JsonDocument data = JsonDocument.Parse(response);
-                JsonElement root = data.RootElement;
-                List<JsonElement> timeseries = root.GetProperty("properties").GetProperty("timeseries").EnumerateArray().ToList();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+                HttpResponseMessage responseMessage = await client.GetAsync(BaseUrl);
 
-                JsonElement currentWeatherData = timeseries[0];
-                double temperature = currentWeatherData.GetProperty("data").GetProperty("instant").GetProperty("details").GetProperty("air_temperature").GetDouble();
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string response = await responseMessage.Content.ReadAsStringAsync();
+                    JsonDocument data = JsonDocument.Parse(response);
+                    JsonElement root = data.RootElement;
+                    List<JsonElement> timeseries = root.GetProperty(Constant.Properties).GetProperty(Constant.Timeseries).EnumerateArray().ToList();
 
-                return temperature;
+                    JsonElement currentWeatherData = timeseries[0];
+                    double temperature = currentWeatherData.GetProperty(Constant.Data).GetProperty(Constant.Instant).GetProperty(Constant.Details).GetProperty("air_temperature").GetDouble();
+
+                    return temperature;
+                }
+                else
+                {
+                    string errorMessage = string.Format(Constant.Error, responseMessage.StatusCode, responseMessage.ReasonPhrase);
+                    throw new Exception(errorMessage);
+                }
             }
-            else
-            {
-                string errorMessage = string.Format(Constant.Error, responseMessage.StatusCode, responseMessage.ReasonPhrase);
-                throw new Exception(errorMessage);
-            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(Constant.ErrorHandlingAPI + ex.Message);
+            return null;
         }
     }
 }
