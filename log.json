@@ -36,9 +36,15 @@
         "TemperatureDifference": 0.8
     },
     {
-        "Date": "2024-04-28T16:24:06.3657105+03:00",
-        "UserTemperature": 90,
-        "YRData": 5.7,
-        "TemperatureDifference": 84.3
+        "Date": "2024-04-28T19:00:56.1698124Z",
+        "UserTemperature": 0,
+        "YRData": 6,
+        "TemperatureDifference": 6
+    },
+    {
+        "Date": "2024-04-29T20:15:22.2035388Z",
+        "UserTemperature": 6,
+        "YRData": 8,
+        "TemperatureDifference": 2
     }
 ]
