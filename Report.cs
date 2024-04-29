@@ -11,56 +11,40 @@ namespace WeatherLog
     {
         public static async Task GenerateDailyReport(string fileName)
         {
-            var dataList = await ReadDataFromFile(fileName);
-            var todayData = dataList.Where(d => d.Date.Date == DateTime.Now.Date);
-
-            DisplayReport(todayData, Constant.DailyReportTitle);
+            await GenerateReport(fileName, data => data.Where(d => d.Date.Date == DateTime.Now.Date), DisplayDailyData);
         }
 
         public static async Task GenerateWeeklyReport(string fileName)
         {
-            var dataList = await ReadDataFromFile(fileName);
-            var weekData = dataList.Where(d => d.Date.Date >= DateTime.Now.Date.AddDays(-7));
-
-            if (weekData.Count() < Constant.NumberSeven)
-            {
-                Console.WriteLine(Constant.NotEnoughDataWeekly);
-                return;
-            }
-
-            DisplayReport(weekData, Constant.WeeklyReportTitle);
+            await GenerateReport(fileName, data => data.Where(d => d.Date.Date >= DateTime.Now.Date.AddDays(-7)), DisplayAverageData, Constant.NumberSeven, Constant.NotEnoughDataWeekly);
         }
 
         public static async Task GenerateMonthlyReport(string fileName)
         {
-            var dataList = await ReadDataFromFile(fileName);
-            var monthData = dataList.Where(d => d.Date.Date >= DateTime.Now.Date.AddMonths(-1));
-
-            if (monthData.Count() < Constant.NumberTwentyNine)
-            {
-                Console.WriteLine(Constant.NotEnoughDataMonthly);
-                return;
-            }
-
-            DisplayReport(monthData, Constant.MonthlyReportTitle);
+            await GenerateReport(fileName, data => data.Where(d => d.Date.Date >= DateTime.Now.Date.AddMonths(-1)), DisplayAverageData, Constant.NumberTwentyNine, Constant.NotEnoughDataMonthly);
         }
 
-        private static void DisplayReport(IEnumerable<UserInteraction.DateData> data, string reportTitle)
+        private static async Task GenerateReport(string fileName, Func<IEnumerable<UserInteraction.DateData>, IEnumerable<UserInteraction.DateData>> filter, Func<IEnumerable<UserInteraction.DateData>, string> display, int minCount = 0, string notEnoughDataMessage = null)
         {
-            Console.WriteLine(reportTitle);
+            var dataList = await ReadDataFromFile(fileName);
+            var filteredData = filter(dataList);
 
-            if (reportTitle == Constant.DailyReportTitle)
+            if (filteredData.Count() < minCount)
             {
-                foreach (var item in data)
-                {
-                    Console.WriteLine(Constant.TodayIs, item.Date);
-                    Console.WriteLine(string.Format(Constant.UserTemperatureActualTemperature, item.UserTemperature, item.YRData, item.TemperatureDifference));
-                }
+                Console.WriteLine(notEnoughDataMessage);
+                return;
             }
-            else
-            {
-                Console.WriteLine(string.Format(Constant.UserTemperatureActualTemperature, Math.Round(data.Average(d => d.UserTemperature), 1), Math.Round(data.Average(d => d.YRData), 1), Math.Round(data.Average(d => d.TemperatureDifference), 1)));
-            }
+            Console.WriteLine(display(filteredData));
+        }
+
+        private static string DisplayDailyData(IEnumerable<UserInteraction.DateData> data)
+        {
+            return string.Join(Environment.NewLine, data.Select(item => string.Format(Constant.UserTemperatureActualTemperature, item.UserTemperature, item.YRData, item.TemperatureDifference)));
+        }
+
+        private static string DisplayAverageData(IEnumerable<UserInteraction.DateData> data)
+        {
+            return string.Format(Constant.AverageTemperatureReport, Math.Round(data.Average(d => d.UserTemperature), 1), Math.Round(data.Average(d => d.YRData), 1), Math.Round(data.Average(d => d.TemperatureDifference), 1));
         }
 
         private static async Task<List<UserInteraction.DateData>> ReadDataFromFile(string fileName)
