@@ -10,7 +10,11 @@ namespace WeatherLog
     {
         static async Task Main(string[] args)
         {
+            //Test.TestCalculateTemperatureDifference();
+            //Test.TestCalculateTemperatureDifferenceWithNegativeValues();
+            //Test.TestCreateDataObject();
             await UserInteraction.InteractWithUserAsync();
         }
+
     }
 }
