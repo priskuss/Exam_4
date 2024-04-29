@@ -4,13 +4,13 @@ namespace WeatherLog
 {
     class UserInteraction
     {
-        public static async Task<bool> IsDataForTodayAlreadySaved(string fileName)
+        public static async Task<bool> IsDataForTodayAlreadySavedAsync(string fileName)
         {
-            List<DateData> dataList = await ReadDataFromFile(fileName);
-            return dataList.Any(d => d.Date.Date == DateTime.Now.Date);
+            List<DateData> dataList = await ReadDataFromFileAsync(fileName);
+            return dataList.Any(d => d.Date.Date == DateTime.UtcNow.Date);
         }
 
-        public static async Task<List<DateData>> ReadDataFromFile(string fileName)
+        public static async Task<List<DateData>> ReadDataFromFileAsync(string fileName)
         {
             if (File.Exists(fileName))
             {
@@ -25,7 +25,7 @@ namespace WeatherLog
 
         public static async Task InteractWithUserAsync()
         {
-            if (await IsDataForTodayAlreadySaved(Constant.LogFile))
+            if (await IsDataForTodayAlreadySavedAsync(Constant.LogFile))
             {
                 Console.WriteLine(Constant.DataIsAlreadySavedNoNewData);
                 return;
@@ -43,43 +43,54 @@ namespace WeatherLog
                     double? YRData = await API.GetWeatherDataAsync();
                     if (YRData.HasValue)
                     {
-                        DisplayTemperatureData(userTemperature, YRData.Value);
-                        await SaveTemperatureData(userTemperature, YRData.Value, Constant.LogFile);
-
-                        Thread.Sleep(5000);
-                        Console.Clear();
-                        Console.WriteLine(Constant.DoYouWantToSeeTheReport);
-                        string reportChoice = Console.ReadLine();
-
-                        switch (reportChoice)
-                        {
-                            case Constant.DailyReport:
-                                await Report.GenerateDailyReport(Constant.LogFile);
-                                break;
-                            case Constant.WeeklyReport:
-                                await Report.GenerateWeeklyReport(Constant.LogFile);
-                                break;
-                            case Constant.MonthlyReport:
-                                await Report.GenerateMonthlyReport(Constant.LogFile);
-                                break;
-                            case Constant.Exit:
-                                Environment.Exit(0);
-                                break;
-                            default:
-                                Console.WriteLine(Constant.InvalidChoice);
-                                break;
-                        }
+                        await ProcessUserTemperatureAsync(userTemperature, YRData.Value);
+                        break;
                     }
-                    break;
                 }
             }
         }
+
+        private static async Task ProcessUserTemperatureAsync(double userTemperature, double YRData)
+        {
+            DisplayTemperatureData(userTemperature, YRData);
+            await SaveTemperatureDataAsync(userTemperature, YRData, Constant.LogFile);
+
+            Thread.Sleep(5000);
+            Console.Clear();
+            Console.WriteLine(Constant.DoYouWantToSeeTheReport);
+            string reportChoice = Console.ReadLine();
+
+            await GenerateReportBasedOnUserChoiceAsync(reportChoice);
+        }
+
+        private static async Task GenerateReportBasedOnUserChoiceAsync(string reportChoice)
+        {
+            switch (reportChoice)
+            {
+                case Constant.DailyReport:
+                    await Report.GenerateDailyReport(Constant.LogFile);
+                    break;
+                case Constant.WeeklyReport:
+                    await Report.GenerateWeeklyReport(Constant.LogFile);
+                    break;
+                case Constant.MonthlyReport:
+                    await Report.GenerateMonthlyReport(Constant.LogFile);
+                    break;
+                case Constant.Exit:
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.WriteLine(Constant.InvalidChoice);
+                    break;
+            }
+        }
+
         public static bool GetUserConfirmation(string message)
         {
             Console.WriteLine(message);
             Console.WriteLine(Constant.Note);
             string saveDataResponse = Console.ReadLine();
-            return saveDataResponse.ToLower() == Constant.Yes;
+            return string.Equals(saveDataResponse, Constant.Yes, StringComparison.OrdinalIgnoreCase);
         }
 
         public static void DisplayTemperatureData(double userTemperature, double YRData)
@@ -98,7 +109,7 @@ namespace WeatherLog
             Console.WriteLine(prediction);
         }
 
-        public static async Task SaveTemperatureData(double userTemperature, double YRData, string fileName)
+        public static async Task SaveTemperatureDataAsync(double userTemperature, double YRData, string fileName)
         {
             DateData data = CreateDataObject(userTemperature, YRData, CalculateTemperatureDifference(userTemperature, YRData));
             await AppendDataToFileAsync(fileName, data);
@@ -106,18 +117,16 @@ namespace WeatherLog
 
         public static double GetUserTemperature()
         {
-            double temperature;
             while (true)
             {
                 Console.Write(Constant.EnterTemperature);
                 string input = Console.ReadLine();
-                if (double.TryParse(input, out temperature))
+                if (double.TryParse(input, out double temperature))
                 {
-                    break;
+                    return temperature;
                 }
                 Console.WriteLine(Constant.InvalidInput);
             }
-            return temperature;
         }
 
         public static void CompareTemperatures(double userTemperature, double YRData)
@@ -146,7 +155,7 @@ namespace WeatherLog
         {
             return new DateData
             {
-                Date = DateTime.Now,
+                Date = DateTime.UtcNow,
                 UserTemperature = userTemperature,
                 YRData = YRData,
                 TemperatureDifference = temperatureDifference
@@ -155,13 +164,13 @@ namespace WeatherLog
 
         public static async Task AppendDataToFileAsync(string fileName, DateData data)
         {
-            if (await IsDataForTodayAlreadySaved(fileName))
+            if (await IsDataForTodayAlreadySavedAsync(fileName))
             {
                 Console.WriteLine(Constant.DataSaved);
                 return;
             }
 
-            List<DateData> dataList = await ReadDataFromFile(fileName);
+            List<DateData> dataList = await ReadDataFromFileAsync(fileName);
             dataList.Add(data);
 
             string newDataJson = JsonSerializer.Serialize(dataList);
